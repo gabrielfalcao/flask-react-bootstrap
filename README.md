@@ -51,11 +51,13 @@ make run
 ```
 
 
-# FAQ
+# Open source projects used
 
-
-### How do I deploy this stuff ?
-
-**Check the [`Makefile`](Makefile) it has a `web` target that calls gunicorn**
-
-Also: https://flask-socketio.readthedocs.org/en/latest/
+* [flask-socketio](https://flask-socketio.readthedocs.org/en/latest/)
+* [ReactJS](https://facebook.github.io/react/)
+* [webpack](https://webpack.github.io/)
+* [bootswatch](https://bootswatch.com/)
+* [react-bootstrap](https://react-bootstrap.github.io/)
+* [react-router](https://github.com/rackt/react-router)
+* [react-dom](https://www.npmjs.com/package/react-dom)
+* [gevent](http://www.gevent.org/)
