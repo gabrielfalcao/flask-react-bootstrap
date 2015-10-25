@@ -119,36 +119,37 @@
 	                { className: 'row' },
 	                _react2['default'].createElement(
 	                    'div',
-	                    { className: 'col-md-12' },
+	                    { className: 'col-md-8' },
 	                    _react2['default'].createElement(
 	                        'h3',
 	                        null,
-	                        'Socket IO baby'
+	                        'socket.io, baby'
 	                    ),
 	                    _react2['default'].createElement(
-	                        'div',
-	                        { className: 'col-md-8' },
+	                        _reactBootstrap.Panel,
+	                        { header: 'Stuff coming from Flask', bsStyle: 'primary' },
 	                        _react2['default'].createElement(
-	                            _reactBootstrap.Panel,
-	                            { header: 'Stuff coming from Flask', bsStyle: 'primary' },
-	                            _react2['default'].createElement(
-	                                'pre',
-	                                { id: 'recv' },
-	                                'waiting'
-	                            )
+	                            'pre',
+	                            { id: 'recv' },
+	                            'waiting'
 	                        )
+	                    )
+	                ),
+	                _react2['default'].createElement(
+	                    'div',
+	                    { className: 'col-md-4' },
+	                    _react2['default'].createElement(
+	                        'h3',
+	                        null,
+	                        'subprocess: ping'
 	                    ),
 	                    _react2['default'].createElement(
-	                        'div',
-	                        { className: 'col-md-4' },
+	                        _reactBootstrap.Panel,
+	                        { header: 'Send stuff to Flask', bsStyle: 'info' },
 	                        _react2['default'].createElement(
-	                            _reactBootstrap.Panel,
-	                            { header: 'Send stuff to Flask', bsStyle: 'info' },
-	                            _react2['default'].createElement(
-	                                _reactBootstrap.Button,
-	                                { bsStyle: 'warning', onClick: this.askForConsole },
-	                                'ping google.com'
-	                            )
+	                            _reactBootstrap.Button,
+	                            { bsStyle: 'warning', onClick: this.askForConsole },
+	                            'ping google.com'
 	                        )
 	                    )
 	                )
@@ -163,7 +164,7 @@
 	        null,
 	        _react2['default'].createElement(_reactRouter.Route, { path: '/', component: App })
 	    ), document.getElementById('app-container'));
-	}, 1000);
+	});
 
 /***/ },
 /* 1 */,

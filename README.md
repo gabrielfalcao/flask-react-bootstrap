@@ -1,7 +1,8 @@
 # Flask + ReactJS + Webpack + Bootstrap + Socket.IO + Subprocess
 
-Buzzwords...
+**Buzzwords...**
 
+![screenshot.png](screenshot.png)
 
 But this is the truth: By cloning this repo and following the
 instructions you might get a working flask app that can ping arbitrary

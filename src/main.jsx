@@ -47,19 +47,17 @@ const App = React.createClass({
                 </Navbar>
 
                 <div className="row">
-                    <div className="col-md-12">
-
-                        <h3>Socket IO baby</h3>
-                        <div className="col-md-8">
-                            <Panel header="Stuff coming from Flask" bsStyle="primary">
-                                <pre id="recv">waiting</pre>
-                            </Panel>
-                        </div>
-                        <div className="col-md-4">
-                            <Panel header="Send stuff to Flask" bsStyle="info">
-                                <Button bsStyle="warning" onClick={this.askForConsole}>ping google.com</Button>
-                            </Panel>
-                        </div>
+                    <div className="col-md-8">
+                        <h3>socket.io, baby</h3>
+                        <Panel header="Stuff coming from Flask" bsStyle="primary">
+                            <pre id="recv">waiting</pre>
+                        </Panel>
+                    </div>
+                    <div className="col-md-4">
+                        <h3>subprocess: ping</h3>
+                        <Panel header="Send stuff to Flask" bsStyle="info">
+                            <Button bsStyle="warning" onClick={this.askForConsole}>ping google.com</Button>
+                        </Panel>
                     </div>
                 </div>
             </div>
@@ -74,4 +72,4 @@ const App = React.createClass({
                 </Route>
             </Router>
         ), document.getElementById('app-container'))
-    }, 1000);
+    })
