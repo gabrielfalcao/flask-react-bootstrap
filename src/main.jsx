@@ -51,13 +51,13 @@ const App = React.createClass({
 
                         <h3>Socket IO baby</h3>
                         <div className="col-md-8">
-                            <Panel header="Stuff coming from Flask" bsStyle="success">
+                            <Panel header="Stuff coming from Flask" bsStyle="primary">
                                 <pre id="recv">waiting</pre>
                             </Panel>
                         </div>
                         <div className="col-md-4">
-                            <Panel header="Send stuff to Flask" bsStyle="warning">
-                                <Button bsStyle="danger" onClick={this.askForConsole}>ping google.com</Button>
+                            <Panel header="Send stuff to Flask" bsStyle="info">
+                                <Button bsStyle="warning" onClick={this.askForConsole}>ping google.com</Button>
                             </Panel>
                         </div>
                     </div>

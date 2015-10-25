@@ -15,4 +15,4 @@ run:
 
 
 web:
-	gunicorn --workers 4 --bind 0.0.0.0:5000 --worker-class socketio.sgunicorn.GeventSocketIOWorker app:web
+	gunicorn --preload --keep-alive=10 --debug --workers 4 --bind 0.0.0.0:5000 --worker-class socketio.sgunicorn.NginxGeventSocketIOWorker app:web

@@ -2,8 +2,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import gevent
-import gevent.monkey
-gevent.monkey.patch_all()
+
 from subprocess import Popen, PIPE, STDOUT
 import logging
 import coloredlogs
@@ -11,7 +10,7 @@ from datetime import datetime
 
 from flask import Flask, render_template
 from flask import send_from_directory
-from flask.ext.socketio import SocketIO, send, emit
+from flask.ext.socketio import SocketIO, emit
 
 logger = logging.getLogger('flask-app')
 
@@ -42,18 +41,16 @@ def websocket_hello(data):
 def websocket_console(data):
     logger.warning("DATA: %s", data)
     cmd = 'ping -t 10 {domain}'.format(**data)
-    logger.info("requested %s", data)
-    logger.error(cmd)
+    logger.info("shell: %s", cmd)
 
     process = Popen(cmd, stdout=PIPE, stderr=STDOUT, shell=True)
-    emit('shell', {'clear': False, 'line': '{0}\n'.format(cmd)})
+    emit('shell', {'clear': True, 'line': '{0}\n'.format(cmd)})
 
     while True:
         raw = process.stdout.readline()
         if not raw:
             break
 
-        logger.info("SHELL: %s", unicode(raw, 'utf-8'))
         gevent.sleep(0)
         emit('shell', {'line': unicode(raw, 'utf-8')})
         gevent.sleep(0)
