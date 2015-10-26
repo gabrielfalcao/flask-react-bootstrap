@@ -2,10 +2,12 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import unicode_literals
+import time
 import logging
-import itertools
 import coloredlogs
 import zmq
+
+from names import generate_name
 
 logger = logging.getLogger()
 zmq_context = zmq.Context()
@@ -17,22 +19,18 @@ def main():
     publisher = zmq_context.socket(zmq.PUB)
     publisher.bind('tcp://0.0.0.0:8888')
 
-    URLS = [
-        'https://wordpress.com',
-        'https://gnu.org',
-        'http://httpbin.org/headers',
-        'http://httpbin.org/get',
-        'http://httpbin.org/json',
-        'http://httpbin.org/json',
-    ]
     poller = zmq.Poller()
     poller.register(publisher, zmq.POLLOUT)
     logger.info("listening on tcp://0.0.0.0:8888")
 
-    MAX = 300
-    for index, url in enumerate(itertools.cycle(URLS)):
+    MAX = 20
+    index = 0
+    while True:
         if index > MAX:
             url = 'stop'
+        else:
+            url = generate_name()
+            index += 1
 
         try:
             socks = dict(poller.poll(0.3))
@@ -42,7 +40,8 @@ def main():
                 publisher.send(b" ".join([b'status', bytes(url)]))
                 if url == 'stop':
                     break
-
+                else:
+                    time.sleep(.4)
         except KeyboardInterrupt:
             publisher.close()
             zmq_context.term()

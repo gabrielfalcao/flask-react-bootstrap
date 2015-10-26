@@ -19,14 +19,10 @@ const App = React.createClass({
 	return {stdout: []};
     },
     onShellReceived(stdout) {
-        if (stdout.clear) {
-            jQuery("#recv").empty();
-        }
-        jQuery("#recv").append(stdout.line);
     },
     askForConsole(){
-        console.log("ask for ping");
-        socket.emit('ping', {domain: 'google.com'});
+        console.log("ask for ping " + (new Date()).toUTCString());
+        socket.emit('publisher_spawn', {date: (new Date()).toUTCString});
     },
     render() {
         socket.on('connect', function(){
@@ -37,10 +33,16 @@ const App = React.createClass({
                 jQuery("#recv").text("Socket.IO connected to Flask at "+ data.ready);
                 console.log("READY");
             });
-            socket.on('zeromq', function(data){
-                jQuery("#zeromq-container").append(data);
-                socket.emit("zeromq");
-            });
+        socket.on('shell', function(stdout){
+            if (stdout.clear) {
+                jQuery("#recv").empty();
+            }
+            jQuery("#recv").append(stdout.line);
+        });
+        socket.on('zeromq', function(data){
+            jQuery("#zeromq-container").append(data);
+            socket.emit("zeromq");
+        });
 
         socket.on('shell', this.onShellReceived);
         return (
@@ -54,23 +56,17 @@ const App = React.createClass({
 
                 <div className="row">
                     <div className="col-md-8">
-                        <h3>socket.io, baby</h3>
-                        <Panel header="Stuff coming from Flask" bsStyle="primary">
-                            <pre id="recv">waiting</pre>
+                        <h3>socket.io area receiving data</h3>
+                        <Panel header="shell output" bsStyle="primary">
+                            <pre id="recv">waiting for connection</pre>
+                            <pre id="zeromq-container"></pre>
                         </Panel>
+
                     </div>
                     <div className="col-md-4">
-                        <h3>subprocess: ping</h3>
-                        <Panel header="Send stuff to Flask" bsStyle="info">
-                            <Button bsStyle="warning" onClick={this.askForConsole}>ping google.com</Button>
-                        </Panel>
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-md-8">
-                        <h3>zeromq too!</h3>
-                        <Panel bsStyle="success">
-                            <pre id="zeromq-container"></pre>
+                        <h3>invoke zeromq publisher subprocess</h3>
+                        <Panel header="spawn publisher" bsStyle="info">
+                            <Button bsStyle="warning" onClick={this.askForConsole}>python publisher.py</Button>
                         </Panel>
                     </div>
                 </div>

@@ -21,8 +21,6 @@ web = Flask(__name__)
 web.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(web)
 
-coloredlogs.install(level=logging.DEBUG, show_hostname=False)
-
 zmq_context = zmq.Context()
 
 
@@ -45,7 +43,9 @@ def send_js(path):
 def websocket_hello(data):
     logger.info('client connected %s: ', data)
     emit('ready', {'ready': datetime.utcnow().strftime('%B %d, %Y')})
-    emit('zeromq', b'connected:\n----------\n')
+    gevent.sleep(0)
+    emit('zeromq', b'---------\nconnected\n---------\n')
+    gevent.sleep(0)
 
 
 @socketio.on('zeromq')
@@ -53,27 +53,28 @@ def websocket_zeromq(*args, **kwargs):
     report_printer = zmq_context.socket(zmq.SUB)
     report_printer.setsockopt(zmq.SUBSCRIBE, b'status')
     report_printer.connect('tcp://0.0.0.0:8888')
-    report_printer.setsockopt(zmq.SUBSCRIBE, b'status')
 
     poller = zmq.Poller()
     poller.register(report_printer, zmq.POLLIN)
 
     logging.getLogger("requests").setLevel(logging.WARNING)
-    logger.info('zeromq %s %s', args, kwargs)
+    logger.info('listening to zeromq on 0.0.0.0:8888')
     running = True
     while running:
         socks = dict(poller.poll(0.5))
         if report_printer in socks and socks[report_printer] == zmq.POLLIN:
             data = report_printer.recv()
             running = 'stop' not in data.lower()
-            emit('zeromq', "{0}\n".format(data))
+            topic, value = data.split(' ', 1)
+            gevent.sleep(0)
+            emit('zeromq', "{0}\n".format(value))
+            gevent.sleep(0)
 
 
-@socketio.on('ping')
-def websocket_console(data):
-    logger.warning("DATA: %s", data)
-    cmd = 'ping -t 10 {domain}'.format(**data)
-    logger.info("shell: %s", cmd)
+@socketio.on('publisher_spawn')
+def websocket_console(*data, **kw):
+    logger.info("Client asked for publisher: %s", data)
+    cmd = 'python publisher.py'
 
     process = Popen(cmd, stdout=PIPE, stderr=STDOUT, shell=True)
     emit('shell', {'clear': True, 'line': '{0}\n'.format(cmd)})
@@ -89,4 +90,5 @@ def websocket_console(data):
 
 
 if __name__ == '__main__':
+    coloredlogs.install(level=logging.DEBUG, show_hostname=False)
     socketio.run(web)

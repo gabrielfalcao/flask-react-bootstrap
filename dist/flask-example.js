@@ -74,15 +74,10 @@
 	    getInitialState: function getInitialState() {
 	        return { stdout: [] };
 	    },
-	    onShellReceived: function onShellReceived(stdout) {
-	        if (stdout.clear) {
-	            jQuery("#recv").empty();
-	        }
-	        jQuery("#recv").append(stdout.line);
-	    },
+	    onShellReceived: function onShellReceived(stdout) {},
 	    askForConsole: function askForConsole() {
-	        console.log("ask for ping");
-	        socket.emit('ping', { domain: 'google.com' });
+	        console.log("ask for ping " + new Date().toUTCString());
+	        socket.emit('publisher_spawn', { date: new Date().toUTCString });
 	    },
 	    render: function render() {
 	        socket.on('connect', function () {
@@ -92,6 +87,12 @@
 	        socket.on('ready', function (data) {
 	            jQuery("#recv").text("Socket.IO connected to Flask at " + data.ready);
 	            console.log("READY");
+	        });
+	        socket.on('shell', function (stdout) {
+	            if (stdout.clear) {
+	                jQuery("#recv").empty();
+	            }
+	            jQuery("#recv").append(stdout.line);
 	        });
 	        socket.on('zeromq', function (data) {
 	            jQuery("#zeromq-container").append(data);
@@ -129,16 +130,17 @@
 	                    _react2['default'].createElement(
 	                        'h3',
 	                        null,
-	                        'socket.io, baby'
+	                        'socket.io area receiving data'
 	                    ),
 	                    _react2['default'].createElement(
 	                        _reactBootstrap.Panel,
-	                        { header: 'Stuff coming from Flask', bsStyle: 'primary' },
+	                        { header: 'shell output', bsStyle: 'primary' },
 	                        _react2['default'].createElement(
 	                            'pre',
 	                            { id: 'recv' },
-	                            'waiting'
-	                        )
+	                            'waiting for connection'
+	                        ),
+	                        _react2['default'].createElement('pre', { id: 'zeromq-container' })
 	                    )
 	                ),
 	                _react2['default'].createElement(
@@ -147,34 +149,16 @@
 	                    _react2['default'].createElement(
 	                        'h3',
 	                        null,
-	                        'subprocess: ping'
+	                        'invoke zeromq publisher subprocess'
 	                    ),
 	                    _react2['default'].createElement(
 	                        _reactBootstrap.Panel,
-	                        { header: 'Send stuff to Flask', bsStyle: 'info' },
+	                        { header: 'spawn publisher', bsStyle: 'info' },
 	                        _react2['default'].createElement(
 	                            _reactBootstrap.Button,
 	                            { bsStyle: 'warning', onClick: this.askForConsole },
-	                            'ping google.com'
+	                            'python publisher.py'
 	                        )
-	                    )
-	                )
-	            ),
-	            _react2['default'].createElement(
-	                'div',
-	                { className: 'row' },
-	                _react2['default'].createElement(
-	                    'div',
-	                    { className: 'col-md-8' },
-	                    _react2['default'].createElement(
-	                        'h3',
-	                        null,
-	                        'zeromq too!'
-	                    ),
-	                    _react2['default'].createElement(
-	                        _reactBootstrap.Panel,
-	                        { bsStyle: 'success' },
-	                        _react2['default'].createElement('pre', { id: 'zeromq-container' })
 	                    )
 	                )
 	            )
