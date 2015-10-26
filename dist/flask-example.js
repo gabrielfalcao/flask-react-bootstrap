@@ -81,15 +81,21 @@
 	        jQuery("#recv").append(stdout.line);
 	    },
 	    askForConsole: function askForConsole() {
+	        console.log("ask for ping");
 	        socket.emit('ping', { domain: 'google.com' });
 	    },
 	    render: function render() {
 	        socket.on('connect', function () {
 	            socket.emit("hello", { data: "React is ready!" });
+	            socket.emit("zeromq");
 	        });
 	        socket.on('ready', function (data) {
 	            jQuery("#recv").text("Socket.IO connected to Flask at " + data.ready);
 	            console.log("READY");
+	        });
+	        socket.on('zeromq', function (data) {
+	            jQuery("#zeromq-container").append(data);
+	            socket.emit("zeromq");
 	        });
 
 	        socket.on('shell', this.onShellReceived);
@@ -151,6 +157,24 @@
 	                            { bsStyle: 'warning', onClick: this.askForConsole },
 	                            'ping google.com'
 	                        )
+	                    )
+	                )
+	            ),
+	            _react2['default'].createElement(
+	                'div',
+	                { className: 'row' },
+	                _react2['default'].createElement(
+	                    'div',
+	                    { className: 'col-md-8' },
+	                    _react2['default'].createElement(
+	                        'h3',
+	                        null,
+	                        'zeromq too!'
+	                    ),
+	                    _react2['default'].createElement(
+	                        _reactBootstrap.Panel,
+	                        { bsStyle: 'success' },
+	                        _react2['default'].createElement('pre', { id: 'zeromq-container' })
 	                    )
 	                )
 	            )
