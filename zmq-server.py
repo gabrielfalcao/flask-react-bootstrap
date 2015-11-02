@@ -43,9 +43,9 @@ def log(request):
 
 while True:
     available = dict(poller.poll())
+    time.sleep(.3)
 
     if socket not in available:
-        time.sleep(.5)
         continue
 
     if available[socket] == zmq.POLLOUT:

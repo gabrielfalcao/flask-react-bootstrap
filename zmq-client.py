@@ -48,7 +48,6 @@ while True:
     available = dict(poller.poll())
 
     if socket not in available:
-        time.sleep(random.choice([.3, .5, .8, .2, .6]))
         continue
 
     if available[socket] == zmq.POLLOUT:
@@ -61,3 +60,5 @@ while True:
     if available[socket] == zmq.POLLIN:
         response = socket.recv_json()
         log(response)
+
+    time.sleep(random.choice([.3, .5, .8, .2, .6]))
