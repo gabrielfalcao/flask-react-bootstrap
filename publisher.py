@@ -23,7 +23,7 @@ def main():
     poller.register(publisher, zmq.POLLOUT)
     logger.info("listening on tcp://0.0.0.0:8888")
 
-    MAX = 20
+    MAX = 200
     index = 0
     while True:
         if index > MAX:
@@ -41,7 +41,7 @@ def main():
                 if url == 'stop':
                     break
                 else:
-                    time.sleep(.4)
+                    time.sleep(.13)
         except KeyboardInterrupt:
             publisher.close()
             zmq_context.term()

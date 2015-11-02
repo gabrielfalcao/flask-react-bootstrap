@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+import json
 import gevent
 import gevent.monkey
 gevent.monkey.patch_all()
@@ -24,6 +25,15 @@ socketio = SocketIO(web)
 zmq_context = zmq.Context()
 
 
+def parse_monitor(raw):
+    topic, binary, _, msg = raw
+    data = json.loads(msg)
+    return {
+        'topic': topic,
+        'data': data
+    }
+
+
 @web.route('/')
 def index():
     return render_template('index.html')
@@ -44,15 +54,20 @@ def websocket_hello(data):
     logger.info('client connected %s: ', data)
     emit('ready', {'ready': datetime.utcnow().strftime('%B %d, %Y')})
     gevent.sleep(0)
-    emit('zeromq', b'---------\nconnected\n---------\n')
+    if int(data.get('connection_attempt', 0)) == 0:
+        emit('zeromq', b'Hey, this is a message coming from flask through socket.io\n')
+        emit('zeromq', b'as acknowledgement that the client/server connection is healthy. Yay!\n')
+    else:
+        emit('zeromq', b'reconnected to server\n')
+
     gevent.sleep(0)
 
 
 @socketio.on('zeromq')
 def websocket_zeromq(*args, **kwargs):
     report_printer = zmq_context.socket(zmq.SUB)
-    report_printer.setsockopt(zmq.SUBSCRIBE, b'status')
-    report_printer.connect('tcp://0.0.0.0:8888')
+    report_printer.setsockopt(zmq.SUBSCRIBE, b'')
+    report_printer.connect('tcp://0.0.0.0:5570')
 
     poller = zmq.Poller()
     poller.register(report_printer, zmq.POLLIN)
@@ -63,18 +78,21 @@ def websocket_zeromq(*args, **kwargs):
     while running:
         socks = dict(poller.poll(0.5))
         if report_printer in socks and socks[report_printer] == zmq.POLLIN:
-            data = report_printer.recv()
-            running = 'stop' not in data.lower()
-            topic, value = data.split(' ', 1)
-            gevent.sleep(0)
-            emit('zeromq', "{0}\n".format(value))
+            raw = report_printer.recv_multipart()
+            try:
+                data = parse_monitor(raw)
+                emit('zeromq', data)
+            except TypeError:
+                data = None
+                logger.exception("could not json decode %s", repr(raw))
+
             gevent.sleep(0)
 
 
 @socketio.on('publisher_spawn')
 def websocket_console(*data, **kw):
     logger.info("Client asked for publisher: %s", data)
-    cmd = 'python publisher.py'
+    cmd = 'ping google.com'
 
     process = Popen(cmd, stdout=PIPE, stderr=STDOUT, shell=True)
     emit('shell', {'clear': True, 'line': '{0}\n'.format(cmd)})
