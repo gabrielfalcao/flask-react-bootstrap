@@ -1,0 +1,5 @@
+base:
+    # building a tagged local image can also speed up development
+    # docker build -t frb .
+    # image: frb
+    build: .

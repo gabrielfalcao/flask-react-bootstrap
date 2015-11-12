@@ -2,16 +2,22 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import unicode_literals
+import os
+import time
 
 import zmq
-import time
 
 from names import generate_name
 
-port = "5560"
+# FRB prefix so it won't clash with auto generated variables of docker compose
+queue_host = os.environ.get("FRB_QUEUE_HOST", "localhost")
+port = os.environ.get("FRB_SERVER_PORT", "5560")
+
 context = zmq.Context()
 socket = context.socket(zmq.REP)
-socket.connect("tcp://localhost:%s" % port)
+connection = "tcp://{}:{}".format(queue_host, port)
+print 'connection', connection, queue_host, port
+socket.connect(connection)
 server_id = generate_name()
 
 poller = zmq.Poller()

@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+
+import os
 import json
 import gevent
 import gevent.monkey
@@ -65,9 +67,13 @@ def websocket_hello(data):
 
 @socketio.on('zeromq')
 def websocket_zeromq(*args, **kwargs):
+
+    queue_host = os.environ.get("FRB_QUEUE_HOST", "localhost")
+    monitor_port = os.environ.get("FRB_MONITOR_PORT", "5570")
+
     report_printer = zmq_context.socket(zmq.SUB)
     report_printer.setsockopt(zmq.SUBSCRIBE, b'')
-    report_printer.connect('tcp://0.0.0.0:5570')
+    report_printer.connect('tcp://{}:{}'.format(queue_host, monitor_port))
 
     poller = zmq.Poller()
     poller.register(report_printer, zmq.POLLIN)
@@ -109,4 +115,4 @@ def websocket_console(*data, **kw):
 
 if __name__ == '__main__':
     coloredlogs.install(level=logging.DEBUG, show_hostname=False)
-    socketio.run(web)
+    socketio.run(web, host='0.0.0.0')
