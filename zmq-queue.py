@@ -12,9 +12,12 @@ def main():
     out_prefix = bytes('out')
     monitoringdevice = MonitoredQueue(zmq.XREP, zmq.XREQ, zmq.PUB, in_prefix, out_prefix)
 
-    monitoringdevice.bind_in("tcp://127.0.0.1:5559")
-    monitoringdevice.bind_out("tcp://127.0.0.1:5560")
-    monitoringdevice.bind_mon("tcp://127.0.0.1:5570")
+    # client
+    monitoringdevice.bind_in("tcp://0.0.0.0:5559")
+    # server
+    monitoringdevice.bind_out("tcp://0.0.0.0:5560")
+    # monitor
+    monitoringdevice.bind_mon("tcp://0.0.0.0:5570")
 
     monitoringdevice.setsockopt_in(zmq.RCVHWM, 1)
     monitoringdevice.setsockopt_out(zmq.SNDHWM, 1)

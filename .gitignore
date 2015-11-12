@@ -13,3 +13,4 @@ supervisord.log
 supervisor.pid
 supervisord.pid
 *.log.*
+dist/

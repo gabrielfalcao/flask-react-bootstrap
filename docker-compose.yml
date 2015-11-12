@@ -1,0 +1,53 @@
+queue:
+  extends:
+    file: base-docker.yml
+    service: base
+  command: "python zmq-queue.py"
+  volumes:
+    - /projects/personal/flask-react-bootstrap:/srv
+  ports:
+    - 5559:5559
+    - 5560:5560
+    - 5570:5570
+
+server:
+  extends:
+    file: base-docker.yml
+    service: base
+  command: "python zmq-server.py"
+  environment:
+    FRB_QUEUE_HOST: queue
+  # mapping vagrant shared folder to the image /srv so I can change files w/o rebuilding the container to speed up dev time
+  # volumes:
+  #   - /projects/personal/flask-react-bootstrap:/srv
+  links:
+    - queue
+
+client:
+  extends:
+    file: base-docker.yml
+    service: base
+  command: "python zmq-client.py"
+  environment:
+    FRB_QUEUE_HOST: queue
+  # mapping vagrant shared folder to the image /srv so I can change files w/o rebuilding the container to speed up dev time
+  # volumes:
+  #   - /projects/personal/flask-react-bootstrap:/srv
+  links:
+    - queue
+    - server
+
+web:
+  extends:
+    file: base-docker.yml
+    service: base
+  command: "python app.py"
+  environment:
+    FRB_QUEUE_HOST: queue
+  # mapping vagrant shared folder to the image /srv so I can change files w/o rebuilding the container to speed up dev time
+  # volumes:
+  #   - /projects/personal/flask-react-bootstrap:/srv
+  links:
+    - queue
+  ports:
+    - 5000:5000

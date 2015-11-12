@@ -3,6 +3,7 @@
 
 from __future__ import unicode_literals
 
+import os
 import zmq
 import time
 import random
@@ -10,11 +11,13 @@ from names import generate_name
 
 
 context = zmq.Context()
-port = "5559"
+# FRB prefix so it won't clash with auto generated variables of docker compose
+server = os.environ.get("FRB_QUEUE_HOST", "localhost")
+port = os.environ.get("FRB_CLIENT_PORT", "5559")
 
 print "Connecting to server..."
 socket = context.socket(zmq.REQ)
-socket.connect("tcp://localhost:{}".format(port))
+socket.connect("tcp://{}:{}".format(server, port))
 
 client_id = generate_name()
 
